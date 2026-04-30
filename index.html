@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>P&P 영화 인포멀 · LG전자</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#09090f;--bg2:#111118;--bg3:#18181f;
+  --card:#1c1c26;--card2:#222230;
+  --accent:#e8c97a;--accent2:#c9a84c;--accent3:#f0dfa0;
+  --red:#e05555;--green:#4ec87a;--blue:#5b9cf6;
+  --text:#ede9e0;--muted:#7a7a90;--border:#28283a;
+  --radius:12px;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+.screen{display:none;min-height:100vh}
+.screen.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.fade-in{animation:fadeUp .35s ease forwards}
+#loginScreen{display:flex;align-items:center;justify-content:center;background:var(--bg);position:relative;overflow:hidden;}
+.login-bg{position:absolute;inset:0;pointer-events:none}
+.login-bg-circle{position:absolute;border-radius:50%;background:radial-gradient(circle,rgba(232,201,122,.08) 0%,transparent 70%);}
+.login-box{width:380px;background:var(--card);border:1px solid var(--border);border-radius:24px;padding:44px 40px;text-align:center;position:relative;z-index:1;box-shadow:0 24px 80px rgba(0,0,0,.5);}
+.login-logo{font-family:'Playfair Display',serif;font-size:38px;color:var(--accent);letter-spacing:3px;text-shadow:0 0 30px rgba(232,201,122,.3);}
+.login-tagline{font-size:10px;color:var(--muted);letter-spacing:4px;text-transform:uppercase;margin:6px 0 28px;}
+.film-row{display:flex;justify-content:center;gap:6px;margin-bottom:28px}
+.film-hole{width:16px;height:22px;background:var(--bg);border:1px solid var(--border);border-radius:4px;position:relative;}
+.film-hole::after{content:'';position:absolute;inset:3px;background:var(--bg2);border-radius:2px;}
+.inp{width:100%;padding:13px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;margin-bottom:12px;outline:none;font-family:'Noto Sans KR',sans-serif;transition:border-color .2s;}
+.inp:focus{border-color:var(--accent)}
+.btn-primary{width:100%;padding:14px;background:linear-gradient(135deg,var(--accent) 0%,var(--accent2) 100%);border:none;border-radius:10px;color:#0a0a0f;font-weight:700;font-size:15px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;letter-spacing:.5px;transition:opacity .2s,transform .1s;}
+.btn-primary:hover{opacity:.9}
+.btn-primary:active{transform:scale(.99)}
+.login-err{color:var(--red);font-size:12px;margin-top:10px;min-height:16px}
+.login-hint{margin-top:20px;font-size:12px;color:var(--muted);line-height:1.8;background:var(--bg2);border-radius:8px;padding:12px 16px;border:1px solid var(--border)}
+nav{position:sticky;top:0;z-index:100;background:rgba(9,9,15,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0 28px;height:60px;display:flex;align-items:center;justify-content:space-between;}
+.nav-logo{font-family:'Playfair Display',serif;font-size:22px;color:var(--accent);cursor:pointer;letter-spacing:1px;display:flex;align-items:center;gap:8px;}
+.nav-menu{display:flex;gap:2px}
+.nav-btn{background:none;border:none;color:var(--muted);font-size:13px;padding:8px 15px;border-radius:8px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .2s;white-space:nowrap;}
+.nav-btn:hover{color:var(--text);background:rgba(255,255,255,.05)}
+.nav-btn.active{color:var(--accent);background:rgba(232,201,122,.1)}
+.nav-right{display:flex;align-items:center;gap:10px}
+.user-chip{background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:5px 14px;font-size:12px;color:var(--muted);}
+.logout-btn{background:none;border:1px solid var(--border);color:var(--muted);font-size:12px;padding:6px 12px;border-radius:8px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .2s;}
+.logout-btn:hover{border-color:var(--red);color:var(--red)}
+.wrap{padding:32px 28px;max-width:1160px;margin:0 auto}
+.sec-title{font-size:20px;font-weight:700;margin-bottom:22px;display:flex;align-items:center;gap:10px;}
+.hero{background:linear-gradient(135deg,#111122 0%,#0d1a2e 50%,#0a1020 100%);border:1px solid var(--border);border-radius:20px;padding:40px;margin-bottom:32px;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;right:-40px;top:-40px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(232,201,122,.06) 0%,transparent 70%);}
+.hero-deco{position:absolute;right:32px;bottom:16px;font-size:100px;opacity:.06;line-height:1;}
+.hero h1{font-family:'Playfair Display',serif;font-size:30px;color:var(--accent);margin-bottom:10px;}
+.hero p{color:var(--muted);font-size:14px;line-height:1.8}
+.stats-row{display:flex;gap:28px;margin-top:24px;flex-wrap:wrap}
+.stat-box{text-align:center}
+.stat-num{font-size:26px;font-weight:700;color:var(--accent)}
+.stat-lbl{font-size:11px;color:var(--muted);margin-top:2px;letter-spacing:.5px}
+.month-tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:24px;scrollbar-width:none;}
+.month-tabs::-webkit-scrollbar{display:none}
+.mtab{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:7px 18px;font-size:13px;color:var(--muted);cursor:pointer;white-space:nowrap;transition:all .2s;font-family:'Noto Sans KR',sans-serif;}
+.mtab:hover{color:var(--text);border-color:var(--muted)}
+.mtab.has{border-color:var(--accent2);color:var(--accent2)}
+.mtab.active{background:var(--accent);color:#0a0a0f;border-color:var(--accent);font-weight:700}
+.movies-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:20px}
+.movie-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;cursor:pointer;transition:transform .22s,border-color .22s,box-shadow .22s;}
+.movie-card:hover{transform:translateY(-5px);border-color:var(--accent2);box-shadow:0 12px 40px rgba(232,201,122,.1);}
+.poster-wrap{width:100%;aspect-ratio:2/3;overflow:hidden;background:var(--bg3);position:relative}
+.poster-wrap img{width:100%;height:100%;object-fit:cover;transition:transform .3s}
+.movie-card:hover .poster-wrap img{transform:scale(1.04)}
+.poster-ph{width:100%;aspect-ratio:2/3;background:var(--bg3);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--muted);font-size:13px;}
+.poster-ph .icon{font-size:44px;opacity:.35}
+.month-badge{position:absolute;top:8px;left:8px;background:rgba(9,9,15,.8);backdrop-filter:blur(6px);border:1px solid var(--border);border-radius:20px;padding:3px 10px;font-size:11px;color:var(--accent);}
+.movie-body{padding:14px}
+.movie-ttl{font-weight:500;font-size:15px;margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.movie-meta{font-size:12px;color:var(--muted);margin-bottom:10px}
+.star-row{display:flex;align-items:center;gap:6px}
+.avg-s{font-size:13px;color:var(--muted)}
+.rcnt{font-size:11px;color:var(--muted);margin-left:auto}
+.add-card{background:var(--bg2);border:2px dashed var(--border);border-radius:var(--radius);min-height:260px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);gap:8px;font-size:13px;transition:all .2s;}
+.add-card:hover{border-color:var(--accent);color:var(--accent)}
+.empty-state{text-align:center;padding:60px 20px;color:var(--muted);grid-column:1/-1;}
+.empty-state .ei{font-size:48px;margin-bottom:14px;opacity:.4}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;}
+.overlay.hidden{display:none}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:20px;width:100%;max-width:700px;max-height:92vh;overflow-y:auto;padding:30px;position:relative;}
+.modal-x{position:absolute;top:16px;right:16px;background:var(--bg2);border:1px solid var(--border);color:var(--muted);width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:20px;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.modal-x:hover{background:var(--red);border-color:var(--red);color:#fff}
+.modal h2{font-size:19px;font-weight:700;margin-bottom:22px;color:var(--accent)}
+.detail-top{display:flex;gap:22px;margin-bottom:26px}
+.detail-poster{width:130px;flex-shrink:0}
+.detail-poster img,.detail-ph{width:100%;aspect-ratio:2/3;object-fit:cover;border-radius:10px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:40px;}
+.avg-box{display:flex;align-items:center;gap:14px;padding:14px 18px;background:var(--bg2);border-radius:12px;margin-bottom:16px;border:1px solid var(--border);}
+.big-avg{font-size:40px;font-weight:700;color:var(--accent);line-height:1}
+.rating-wrap{background:var(--bg2);border-radius:14px;padding:20px;margin-bottom:22px;border:1px solid var(--border);}
+.rating-wrap h4{font-size:13px;color:var(--muted);margin-bottom:14px}
+.star-inp{display:flex;gap:6px;margin-bottom:14px}
+.star-inp span{font-size:30px;cursor:pointer;transition:transform .15s;line-height:1;color:var(--border)}
+.star-inp span:hover{transform:scale(1.18)}
+.r-textarea{width:100%;padding:12px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;font-family:'Noto Sans KR',sans-serif;resize:none;outline:none;height:72px;transition:border-color .2s;}
+.r-textarea:focus{border-color:var(--accent)}
+.btn-sub{background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;color:#0a0a0f;padding:10px 26px;border-radius:9px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;font-size:14px;margin-top:12px;transition:opacity .2s;}
+.btn-sub:hover{opacity:.85}
+.btn-cancel{background:var(--bg3);border:1px solid var(--border);color:var(--muted);padding:10px 20px;border-radius:9px;font-weight:500;cursor:pointer;font-family:'Noto Sans KR',sans-serif;font-size:14px;margin-top:12px;margin-left:8px;transition:all .2s;}
+.btn-cancel:hover{border-color:var(--muted);color:var(--text)}
+.reviews-list h4{font-size:13px;color:var(--muted);margin-bottom:12px}
+.rv-item{background:var(--bg2);border-radius:10px;padding:13px 16px;margin-bottom:8px;border:1px solid var(--border);}
+.rv-head{display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap}
+.rv-user{font-size:13px;font-weight:500}
+.rv-score{font-size:13px;color:var(--accent)}
+.rv-date{font-size:11px;color:var(--muted);margin-left:auto}
+.rv-text{font-size:13px;color:var(--muted);line-height:1.65}
+.del-btn{background:rgba(224,85,85,.12);border:1px solid rgba(224,85,85,.25);color:var(--red);font-size:11px;padding:3px 9px;border-radius:6px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;}
+.rank-list{display:flex;flex-direction:column;gap:10px}
+.rank-item{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 22px;display:flex;align-items:center;gap:16px;transition:border-color .2s;}
+.rank-item.top{border-color:rgba(232,201,122,.3);background:linear-gradient(90deg,rgba(232,201,122,.04) 0%,transparent 60%)}
+.rk-num{font-size:22px;font-weight:700;width:44px;text-align:center}
+.gold{color:#ffd700}.silver{color:#b0b0c0}.bronze{color:#cd7f32}
+.rk-av{width:44px;height:44px;border-radius:50%;background:var(--bg3);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;color:var(--accent);flex-shrink:0;}
+.rk-name{font-weight:500;font-size:15px}
+.rk-dept{font-size:12px;color:var(--muted)}
+.rk-score{margin-left:auto;text-align:right}
+.rk-cnt{font-size:22px;font-weight:700;color:var(--accent)}
+.rk-lbl{font-size:11px;color:var(--muted)}
+.photo-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}
+.photo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
+.ph-card{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;transition:transform .22s;}
+.ph-card:hover{transform:scale(1.02)}
+.ph-img{aspect-ratio:4/3;background:var(--bg3);position:relative;overflow:hidden}
+.ph-img img{width:100%;height:100%;object-fit:cover}
+.ph-sticker{position:absolute;font-size:26px;top:8px;right:10px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.5))}
+.ph-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:52px;background:var(--bg3)}
+.ph-body{padding:12px 14px}
+.ph-date{font-size:11px;color:var(--accent);margin-bottom:4px}
+.ph-cap{font-size:13px;line-height:1.55}
+.ph-auth{font-size:11px;color:var(--muted);margin-top:5px}
+.add-ph{background:var(--bg2);border:2px dashed var(--border);border-radius:16px;aspect-ratio:4/3;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);gap:6px;font-size:13px;transition:all .2s;}
+.add-ph:hover{border-color:var(--accent);color:var(--accent)}
+.a-sec{margin-bottom:32px}
+.a-sec h3{font-size:15px;font-weight:500;color:var(--accent);margin-bottom:14px;padding-bottom:9px;border-bottom:1px solid var(--border);}
+.a-table{width:100%;border-collapse:collapse;font-size:13px}
+.a-table th{text-align:left;padding:10px 13px;background:var(--bg2);color:var(--muted);font-weight:500;}
+.a-table td{padding:10px 13px;border-bottom:1px solid var(--border)}
+.a-table tr:last-child td{border-bottom:none}
+.f-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.f-full{grid-column:1/-1}
+.f-label{font-size:12px;color:var(--muted);margin-bottom:5px}
+.f-inp{width:100%;padding:10px 13px;background:var(--bg2);border:1px solid var(--border);border-radius:9px;color:var(--text);font-size:14px;font-family:'Noto Sans KR',sans-serif;outline:none;transition:border-color .2s;}
+.f-inp:focus{border-color:var(--accent)}
+select.f-inp option{background:var(--bg2)}
+.notice{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px 18px;font-size:13px;color:var(--muted);margin-bottom:20px;border-left:3px solid var(--accent);}
+/* 이름 입력 모달 */
+.name-modal-box{background:var(--card);border:1px solid var(--border);border-radius:20px;width:100%;max-width:400px;padding:32px;position:relative;}
+</style>
+</head>
+<body>
+
+<!-- ══ LOGIN ══ -->
+<div id="loginScreen" class="screen active" style="min-height:100vh;display:flex;align-items:center;justify-content:center">
+  <div class="login-bg">
+    <div class="login-bg-circle" style="width:600px;height:600px;top:-200px;left:-100px"></div>
+    <div class="login-bg-circle" style="width:400px;height:400px;bottom:-100px;right:-50px"></div>
+  </div>
+  <div class="login-box fade-in">
+    <div class="login-logo">P&amp;P</div>
+    <div class="login-tagline">Pause &amp; Play · LG Electronics</div>
+    <div class="film-row">
+      <div class="film-hole"></div><div class="film-hole"></div><div class="film-hole"></div>
+      <div class="film-hole"></div><div class="film-hole"></div><div class="film-hole"></div>
+    </div>
+    <input class="inp" type="text" id="loginId" placeholder="아이디" autocomplete="username" onkeydown="if(event.key==='Enter')document.getElementById('loginPw').focus()">
+    <input class="inp" type="password" id="loginPw" placeholder="비밀번호" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="btn-primary" onclick="doLogin()">🎬 입장하기</button>
+    <div class="login-err" id="loginErr"></div>
+    <div class="login-hint">별도 안내받은 아이디와 비밀번호를 입력해주세요.</div>
+  </div>
+</div>
+
+<!-- ══ 이름 입력 모달 ══ -->
+<div class="overlay hidden" id="nameModal">
+  <div class="name-modal-box fade-in">
+    <div style="font-family:'Playfair Display',serif;font-size:22px;color:var(--accent);margin-bottom:8px">반갑습니다 👋</div>
+    <p style="font-size:14px;color:var(--muted);margin-bottom:22px;line-height:1.7">사이트에서 사용할 이름과 소속을 입력해주세요.<br>한줄평과 랭킹에 표시됩니다.</p>
+    <div style="margin-bottom:12px">
+      <div class="f-label">이름</div>
+      <input class="f-inp" id="nameInp" placeholder="예: 홍길동" onkeydown="if(event.key==='Enter')document.getElementById('deptInp').focus()">
+    </div>
+    <div style="margin-bottom:20px">
+      <div class="f-label">소속 부서 (선택)</div>
+      <input class="f-inp" id="deptInp" placeholder="예: HE사업부" onkeydown="if(event.key==='Enter')submitName()">
+    </div>
+    <button class="btn-primary" onclick="submitName()">입장하기 🎬</button>
+    <div class="login-err" id="nameErr"></div>
+  </div>
+</div>
+
+<!-- ══ APP ══ -->
+<div id="appScreen" class="screen">
+  <nav>
+    <div class="nav-logo" onclick="goTab('home')">P&amp;P 🎬</div>
+    <div class="nav-menu">
+      <button class="nav-btn active" onclick="goTab('home')" id="tab-home">홈</button>
+      <button class="nav-btn" onclick="goTab('movies')" id="tab-movies">🎞 영화 목록</button>
+      <button class="nav-btn" onclick="goTab('ranking')" id="tab-ranking">🏆 랭킹</button>
+      <button class="nav-btn" onclick="goTab('photozone')" id="tab-photozone">📸 포토존</button>
+      <button class="nav-btn" id="tab-admin" onclick="goTab('admin')" style="display:none">⚙ 관리자</button>
+    </div>
+    <div class="nav-right">
+      <div class="user-chip" id="userChip">👤 —</div>
+      <button class="logout-btn" onclick="doLogout()">로그아웃</button>
+    </div>
+  </nav>
+
+  <!-- HOME -->
+  <div id="tc-home" class="wrap">
+    <div class="hero">
+      <div class="hero-deco">🎬</div>
+      <h1>P&amp;P 영화 인포멀</h1>
+      <p>매월 문화의 날, 퇴근 후 함께 영화를 즐기는 LG전자 동아리입니다.<br>2026년 3월~12월까지의 소중한 영화 기록을 함께 남겨요.</p>
+      <div class="stats-row">
+        <div class="stat-box"><div class="stat-num" id="s-movies">0</div><div class="stat-lbl">관람 영화</div></div>
+        <div class="stat-box"><div class="stat-num" id="s-reviews">0</div><div class="stat-lbl">총 한줄평</div></div>
+        <div class="stat-box"><div class="stat-num" id="s-members">0</div><div class="stat-lbl">활동 멤버</div></div>
+        <div class="stat-box"><div class="stat-num" id="s-avg">—</div><div class="stat-lbl">평균 별점</div></div>
+      </div>
+    </div>
+    <div class="sec-title">🗓 최근 상영작</div>
+    <div class="movies-grid" id="homeRecent"></div>
+  </div>
+
+  <!-- MOVIES -->
+  <div id="tc-movies" class="wrap" style="display:none">
+    <div class="sec-title">🎞 월별 영화 목록</div>
+    <div class="month-tabs" id="monthTabs"></div>
+    <div class="movies-grid" id="moviesGrid"></div>
+  </div>
+
+  <!-- RANKING -->
+  <div id="tc-ranking" class="wrap" style="display:none">
+    <div class="sec-title">🏆 우수 활동 회원 랭킹</div>
+    <div class="notice">💡 한줄평 작성 수를 기반으로 자동 산정됩니다. 많이 참여할수록 순위가 올라가요!</div>
+    <div class="rank-list" id="rankList"></div>
+  </div>
+
+  <!-- PHOTOZONE -->
+  <div id="tc-photozone" class="wrap" style="display:none">
+    <div class="photo-hd">
+      <div class="sec-title" style="margin:0">📸 포토존 다이어리</div>
+      <button class="btn-sub" onclick="openPhotoModal()">+ 사진 추가</button>
+    </div>
+    <div class="photo-grid" id="photoGrid"></div>
+  </div>
+
+  <!-- ADMIN -->
+  <div id="tc-admin" class="wrap" style="display:none">
+    <div class="sec-title">⚙ 관리자 페이지</div>
+    <div class="a-sec">
+      <h3>📽 영화 등록</h3>
+      <div class="f-row">
+        <div><div class="f-label">영화 제목</div><input class="f-inp" id="a-title" placeholder="제목 입력"></div>
+        <div><div class="f-label">감독</div><input class="f-inp" id="a-dir" placeholder="감독명"></div>
+      </div>
+      <div class="f-row">
+        <div>
+          <div class="f-label">상영 월</div>
+          <select class="f-inp" id="a-month">
+            <option value="3">3월</option><option value="4">4월</option><option value="5">5월</option>
+            <option value="6">6월</option><option value="7">7월</option><option value="8">8월</option>
+            <option value="9">9월</option><option value="10">10월</option><option value="11">11월</option><option value="12">12월</option>
+          </select>
+        </div>
+        <div><div class="f-label">장르</div><input class="f-inp" id="a-genre" placeholder="예: 드라마, 액션"></div>
+      </div>
+      <div class="f-row"><div class="f-full"><div class="f-label">포스터 이미지 URL (선택)</div><input class="f-inp" id="a-poster" placeholder="https://..."></div></div>
+      <button class="btn-sub" onclick="adminAddMovie()">영화 등록</button>
+    </div>
+    <div class="a-sec">
+      <h3>💬 전체 한줄평 현황</h3>
+      <table class="a-table">
+        <thead><tr><th>이름</th><th>소속</th><th>한줄평 수</th></tr></thead>
+        <tbody id="reviewerTbody"></tbody>
+      </table>
+    </div>
+    <div class="a-sec">
+      <h3>🗑 영화 관리</h3>
+      <table class="a-table">
+        <thead><tr><th>월</th><th>제목</th><th>감독</th><th>리뷰수</th><th>관리</th></tr></thead>
+        <tbody id="movieTbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MOVIE DETAIL MODAL ══ -->
+<div class="overlay hidden" id="movieModal">
+  <div class="modal">
+    <button class="modal-x" onclick="closeMovieModal()">×</button>
+    <div id="movieModalBody"></div>
+  </div>
+</div>
+
+<!-- ══ PHOTO ADD MODAL ══ -->
+<div class="overlay hidden" id="photoModal">
+  <div class="modal" style="max-width:500px">
+    <button class="modal-x" onclick="closePhotoModal()">×</button>
+    <h2>📸 포토 추가</h2>
+    <div style="margin-bottom:14px"><div class="f-label">이미지 URL (선택)</div><input class="f-inp" id="p-url" placeholder="https://... 이미지 링크"></div>
+    <div style="margin-bottom:14px"><div class="f-label">날짜</div><input class="f-inp" type="date" id="p-date"></div>
+    <div style="margin-bottom:14px"><div class="f-label">한마디 설명</div><textarea class="r-textarea" id="p-caption" placeholder="이 날의 기억을 남겨보세요 🎬" style="height:80px"></textarea></div>
+    <div style="margin-bottom:18px">
+      <div class="f-label" style="margin-bottom:8px">스티커 선택</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap" id="stickerPicker">
+        <span style="font-size:26px;cursor:pointer" onclick="pickSticker('🎬',this)">🎬</span>
+        <span style="font-size:26px;cursor:pointer" onclick="pickSticker('🍿',this)">🍿</span>
+        <span style="font-size:26px;cursor:pointer" onclick="pickSticker('⭐',this)">⭐</span>
+        <span style="font-size:26px;cursor:pointer" onclick="pickSticker('🎭',this)">🎭</span>
+        <span style="font-size:26px;cursor:pointer" onclick="pickSticker('🌙',this)">🌙</span>
+        <span style="font-size:26px;cursor:pointer" onclick="pickSticker('💫',this)">💫</span>
+        <span style="font-size:26px;cursor:pointer" onclick="pickSticker('🎊',this)">🎊</span>
+        <span style="font-size:26px;cursor:pointer" onclick="pickSticker('❤️',this)">❤️</span>
+        <span style="font-size:13px;cursor:pointer;padding:6px 10px;background:var(--bg2);border-radius:6px;color:var(--muted)" onclick="pickSticker('',this)">없음</span>
+      </div>
+      <div id="stickerInfo" style="font-size:12px;color:var(--muted);margin-top:6px">선택된 스티커: 없음</div>
+    </div>
+    <button class="btn-sub" onclick="submitPhoto()">추가하기</button>
+    <button class="btn-cancel" onclick="closePhotoModal()">취소</button>
+  </div>
+</div>
+
+<script>
+// ══ 설정: 공용 ID/PW 및 관리자 ══
+const SHARED_ID = '1234';
+const SHARED_PW = '1234';
+const ADMIN = { id:'admin', pw:'admin1234', name:'관리자', dept:'운영팀', role:'admin' };
+
+let MOVIES = [
+  {id:1,title:'파묘',director:'장재현',month:3,genre:'공포/미스터리',poster:'',reviews:[]},
+  {id:2,title:'듄: 파트 2',director:'드니 빌뇌브',month:4,genre:'SF/어드벤처',poster:'',reviews:[]},
+  {id:3,title:'범죄도시 4',director:'허명행',month:5,genre:'액션/범죄',poster:'',reviews:[
+    {memberName:'김민준',dept:'HE사업부',score:4,  text:'마동석은 역시 최고! 시리즈 최고 흥행작',date:'2026-05-24'},
+    {memberName:'이서연',dept:'MC사업부',score:4.5,text:'액션씬 퀄리티가 진짜 높아졌어요 👏',date:'2026-05-24'},
+    {memberName:'박지호',dept:'BS사업부',score:3.5,text:'재미는 있는데 전편에 비해 살짝 아쉬움',date:'2026-05-24'},
+  ]},
+];
+let PHOTOS = [
+  {id:1,url:'',date:'2026-03-28',caption:'3월 문화의 날 파묘 관람! 심장 쫄깃했던 밤 🎬',author:'김민준',sticker:'🎬'},
+  {id:2,url:'',date:'2026-04-25',caption:'듄2 보고 다같이 찍은 단체샷 ✨ SF 감성 폭발',author:'이서연',sticker:'⭐'},
+];
+
+let nextMovieId=10, nextPhotoId=10;
+let currentUser=null, ratingVal=0, tempSticker='', currentMonth=0;
+
+// ══ AUTH ══
+function doLogin(){
+  const id=document.getElementById('loginId').value.trim();
+  const pw=document.getElementById('loginPw').value;
+  document.getElementById('loginErr').textContent='';
+  // 관리자
+  if(id===ADMIN.id && pw===ADMIN.pw){
+    currentUser=ADMIN;
+    enterApp();
+    return;
+  }
+  // 공용 회원
+  if(id===SHARED_ID && pw===SHARED_PW){
+    document.getElementById('nameModal').classList.remove('hidden');
+    document.getElementById('nameInp').value='';
+    document.getElementById('deptInp').value='';
+    document.getElementById('nameErr').textContent='';
+    setTimeout(()=>document.getElementById('nameInp').focus(),100);
+    return;
+  }
+  document.getElementById('loginErr').textContent='아이디 또는 비밀번호가 올바르지 않습니다.';
+}
+
+function submitName(){
+  const name=document.getElementById('nameInp').value.trim();
+  const dept=document.getElementById('deptInp').value.trim();
+  if(!name){document.getElementById('nameErr').textContent='이름을 입력해주세요.';return;}
+  currentUser={ id:'u_'+Date.now(), name, dept:dept||'소속 미입력', role:'member' };
+  document.getElementById('nameModal').classList.add('hidden');
+  enterApp();
+}
+
+function enterApp(){
+  document.getElementById('loginScreen').classList.remove('active');
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('appScreen').classList.add('active');
+  document.getElementById('appScreen').style.display='block';
+  document.getElementById('userChip').textContent='👤 '+currentUser.name+' · '+currentUser.dept;
+  if(currentUser.role==='admin') document.getElementById('tab-admin').style.display='';
+  updateStats(); renderHomeRecent(); renderMovieTabs(); renderRanking(); renderPhotos(); renderAdminTables();
+}
+
+function doLogout(){
+  currentUser=null;
+  document.getElementById('loginScreen').style.display='flex';
+  document.getElementById('loginScreen').classList.add('active');
+  document.getElementById('appScreen').style.display='none';
+  document.getElementById('appScreen').classList.remove('active');
+  document.getElementById('loginId').value='';
+  document.getElementById('loginPw').value='';
+  document.getElementById('loginErr').textContent='';
+  document.getElementById('tab-admin').style.display='none';
+}
+
+// ══ TAB ══
+function goTab(t){
+  ['home','movies','ranking','photozone','admin'].forEach(x=>{
+    document.getElementById('tc-'+x).style.display='none';
+    const b=document.getElementById('tab-'+x); if(b) b.classList.remove('active');
+  });
+  document.getElementById('tc-'+t).style.display='block';
+  const b=document.getElementById('tab-'+t); if(b) b.classList.add('active');
+  if(t==='movies')    renderMoviesGrid();
+  if(t==='ranking')   renderRanking();
+  if(t==='photozone') renderPhotos();
+  if(t==='admin')     renderAdminTables();
+}
+
+// ══ HELPERS ══
+function starsHtml(score,size){
+  size=size||14; let h='';
+  for(let i=0;i<5;i++){
+    if(i+1<=score)          h+=`<span style="color:var(--accent);font-size:${size}px">★</span>`;
+    else if(i+0.5<score+0.01) h+=`<span style="color:var(--accent2);font-size:${size}px">½</span>`;
+    else                    h+=`<span style="color:var(--border);font-size:${size}px">★</span>`;
+  }
+  return h;
+}
+function getAvg(reviews){
+  if(!reviews.length) return 0;
+  return reviews.reduce((a,b)=>a+b.score,0)/reviews.length;
+}
+function movieCardHtml(m){
+  const avg=getAvg(m.reviews);
+  const posterHtml=m.poster
+    ?`<div class="poster-wrap"><img src="${m.poster}" onerror="this.style.display='none'"><div class="month-badge">${m.month}월</div></div>`
+    :`<div class="poster-ph"><div class="icon">🎬</div><div>${m.title}</div></div>`;
+  return `<div class="movie-card" onclick="openMovieModal(${m.id})">
+    ${posterHtml}
+    <div class="movie-body">
+      <div class="movie-ttl">${m.title}</div>
+      <div class="movie-meta">${m.director} · ${m.month}월 · ${m.genre}</div>
+      <div class="star-row">
+        <span>${starsHtml(avg)}</span>
+        <span class="avg-s">${avg?avg.toFixed(1):'—'}</span>
+        <span class="rcnt">${m.reviews.length}개</span>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ══ HOME ══
+function updateStats(){
+  const tr=MOVIES.reduce((a,m)=>a+m.reviews.length,0);
+  const am=new Set(MOVIES.flatMap(m=>m.reviews.map(r=>r.memberName))).size;
+  const sc=MOVIES.flatMap(m=>m.reviews.map(r=>r.score));
+  const avg=sc.length?(sc.reduce((a,b)=>a+b,0)/sc.length).toFixed(1):'—';
+  document.getElementById('s-movies').textContent=MOVIES.length;
+  document.getElementById('s-reviews').textContent=tr;
+  document.getElementById('s-members').textContent=am;
+  document.getElementById('s-avg').textContent=avg;
+}
+function renderHomeRecent(){
+  document.getElementById('homeRecent').innerHTML=
+    [...MOVIES].sort((a,b)=>b.month-a.month).slice(0,4).map(m=>movieCardHtml(m)).join('');
+}
+
+// ══ MOVIES ══
+function renderMovieTabs(){
+  let h=`<button class="mtab active" onclick="filterMonth(0)" id="mt-0">전체</button>`;
+  [3,4,5,6,7,8,9,10,11,12].forEach(m=>{
+    const has=MOVIES.some(mv=>mv.month===m);
+    h+=`<button class="mtab${has?' has':''}" onclick="filterMonth(${m})" id="mt-${m}">${m}월</button>`;
+  });
+  document.getElementById('monthTabs').innerHTML=h;
+  currentMonth=0; renderMoviesGrid();
+}
+function filterMonth(m){
+  currentMonth=m;
+  document.querySelectorAll('.mtab').forEach(b=>b.classList.remove('active'));
+  const el=document.getElementById('mt-'+m); if(el) el.classList.add('active');
+  renderMoviesGrid();
+}
+function renderMoviesGrid(){
+  const list=currentMonth===0?MOVIES:MOVIES.filter(m=>m.month===currentMonth);
+  let h=list.map(m=>movieCardHtml(m)).join('');
+  if(currentUser&&currentUser.role==='admin')
+    h+=`<div class="add-card" onclick="goTab('admin')"><div style="font-size:36px">＋</div><div>영화 추가</div></div>`;
+  if(!list.length)
+    h=`<div class="empty-state"><div class="ei">🎬</div><div>아직 등록된 영화가 없습니다</div></div>`;
+  document.getElementById('moviesGrid').innerHTML=h;
+}
+
+// ══ MOVIE MODAL ══
+function openMovieModal(id){
+  ratingVal=0;
+  const m=MOVIES.find(x=>x.id===id); if(!m) return;
+  const avg=getAvg(m.reviews);
+  // 방법B: 이름 기준으로 중복 체크
+  const myReview=m.reviews.find(r=>r.memberName===currentUser.name);
+  const posterHtml=m.poster
+    ?`<img src="${m.poster}" style="width:100%;aspect-ratio:2/3;object-fit:cover;border-radius:10px" onerror="this.style.display='none'">`
+    :`<div class="detail-ph">🎬</div>`;
+  const reviewsHtml=m.reviews.length
+    ?m.reviews.map(r=>`
+      <div class="rv-item">
+        <div class="rv-head">
+          <span class="rv-user">👤 ${r.memberName}</span>
+          <span style="font-size:11px;color:var(--muted)">${r.dept}</span>
+          <span class="rv-score">${starsHtml(r.score,13)}</span>
+          <span style="font-size:13px;color:var(--accent);margin-left:2px">${r.score.toFixed(1)}</span>
+          <span class="rv-date">${r.date}</span>
+          ${(currentUser.role==='admin'||r.memberName===currentUser.name)
+            ?`<button class="del-btn" onclick="deleteReview(${id},'${r.memberName}')">삭제</button>`:''}
+        </div>
+        <div class="rv-text">${r.text||'<span style="color:var(--border)">한줄평 없음</span>'}</div>
+      </div>`).join('')
+    :`<div style="padding:24px;text-align:center;color:var(--muted)">아직 리뷰가 없어요. 첫 번째로 남겨보세요!</div>`;
+
+  const ratingSection=myReview
+    ?`<div class="rating-wrap" style="border-color:rgba(78,200,122,.25);background:rgba(78,200,122,.05)">
+        <div style="color:var(--green);font-size:13px">✅ 이미 한줄평을 남기셨습니다 (${myReview.score.toFixed(1)}점)</div>
+      </div>`
+    :`<div class="rating-wrap">
+        <h4>✏ 나의 별점과 한줄평 작성</h4>
+        <div class="star-inp" id="starInp">
+          <span onclick="setRating(1)" onmouseover="hoverR(1)" onmouseout="unhoverR()">★</span>
+          <span onclick="setRating(2)" onmouseover="hoverR(2)" onmouseout="unhoverR()">★</span>
+          <span onclick="setRating(3)" onmouseover="hoverR(3)" onmouseout="unhoverR()">★</span>
+          <span onclick="setRating(4)" onmouseover="hoverR(4)" onmouseout="unhoverR()">★</span>
+          <span onclick="setRating(5)" onmouseover="hoverR(5)" onmouseout="unhoverR()">★</span>
+        </div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:10px" id="ratingLbl">별점을 선택해주세요 (같은 별 재클릭 시 0.5점)</div>
+        <textarea class="r-textarea" id="reviewText" placeholder="한줄평을 남겨보세요 (선택사항)"></textarea>
+        <div><button class="btn-sub" onclick="submitReview(${id})">등록</button></div>
+      </div>`;
+
+  document.getElementById('movieModalBody').innerHTML=`
+    <h2>${m.title}</h2>
+    <div class="detail-top">
+      <div class="detail-poster">${posterHtml}</div>
+      <div style="flex:1">
+        <div style="font-size:20px;font-weight:700;margin-bottom:6px">${m.title}</div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:14px">감독 ${m.director} · ${m.month}월 상영 · ${m.genre}</div>
+        <div class="avg-box">
+          <div><div class="big-avg">${avg?avg.toFixed(1):'—'}</div><div style="font-size:12px;color:var(--muted)">평균 별점</div></div>
+          <div style="margin-left:14px">
+            <div>${starsHtml(avg,20)}</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:5px">${m.reviews.length}명 참여</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    ${ratingSection}
+    <div class="reviews-list"><h4>💬 한줄평 (${m.reviews.length})</h4>${reviewsHtml}</div>`;
+  document.getElementById('movieModal').classList.remove('hidden');
+  renderStars(0);
+}
+function closeMovieModal(){ document.getElementById('movieModal').classList.add('hidden'); }
+function hoverR(n){ renderStars(n); }
+function unhoverR(){ renderStars(ratingVal); }
+function setRating(n){
+  ratingVal=(ratingVal===n)?n-0.5:n;
+  if(ratingVal<0) ratingVal=0;
+  renderStars(ratingVal);
+  const l=document.getElementById('ratingLbl');
+  if(l) l.textContent='선택: '+ratingVal.toFixed(1)+'점';
+}
+function renderStars(val){
+  document.querySelectorAll('#starInp span').forEach((s,i)=>{
+    if(i+1<=val)            s.style.color='var(--accent)';
+    else if(i+0.5<val+0.01) s.style.color='var(--accent2)';
+    else                    s.style.color='var(--border)';
+  });
+}
+function submitReview(movieId){
+  if(!ratingVal){ alert('별점을 선택해주세요!'); return; }
+  const text=document.getElementById('reviewText').value.trim();
+  const m=MOVIES.find(x=>x.id===movieId); if(!m) return;
+  const today=new Date().toISOString().split('T')[0];
+  m.reviews.push({ memberName:currentUser.name, dept:currentUser.dept, score:ratingVal, text, date:today });
+  updateStats(); renderRanking(); renderAdminTables(); renderHomeRecent();
+  openMovieModal(movieId);
+}
+function deleteReview(movieId,memberName){
+  if(!confirm('리뷰를 삭제하시겠습니까?')) return;
+  const m=MOVIES.find(x=>x.id===movieId);
+  if(m) m.reviews=m.reviews.filter(r=>r.memberName!==memberName);
+  updateStats(); renderRanking(); renderAdminTables();
+  openMovieModal(movieId);
+}
+
+// ══ RANKING ══
+function renderRanking(){
+  const cnt={};
+  MOVIES.forEach(m=>m.reviews.forEach(r=>{
+    if(!cnt[r.memberName]) cnt[r.memberName]={ name:r.memberName, dept:r.dept, count:0 };
+    cnt[r.memberName].count++;
+  }));
+  const list=Object.values(cnt).sort((a,b)=>b.count-a.count);
+  if(!list.length){
+    document.getElementById('rankList').innerHTML=`<div class="empty-state"><div class="ei">🏆</div><div>아직 한줄평이 없습니다</div></div>`;
+    return;
+  }
+  const medals=['🥇','🥈','🥉'], cls=['gold','silver','bronze'];
+  document.getElementById('rankList').innerHTML=list.map((u,i)=>`
+    <div class="rank-item ${i<3?'top':''}">
+      <div class="rk-num ${cls[i]||''}">${medals[i]||'#'+(i+1)}</div>
+      <div class="rk-av">${u.name[0]}</div>
+      <div><div class="rk-name">${u.name}</div><div class="rk-dept">${u.dept}</div></div>
+      <div class="rk-score"><div class="rk-cnt">${u.count}</div><div class="rk-lbl">한줄평</div></div>
+    </div>`).join('');
+}
+
+// ══ PHOTOZONE ══
+function renderPhotos(){
+  let h=PHOTOS.map(p=>{
+    const imgHtml=p.url
+      ?`<img src="${p.url}" onerror="this.style.display='none'">`
+      :`<div class="ph-ph">${p.sticker||'📸'}</div>`;
+    return `<div class="ph-card">
+      <div class="ph-img">${imgHtml}${p.sticker&&p.url?`<div class="ph-sticker">${p.sticker}</div>`:''}</div>
+      <div class="ph-body">
+        <div class="ph-date">${p.date}</div>
+        <div class="ph-cap">${p.caption}</div>
+        <div class="ph-auth">— ${p.author}</div>
+      </div>
+    </div>`;
+  }).join('');
+  h+=`<div class="add-ph" onclick="openPhotoModal()"><div style="font-size:36px">📷</div><div>사진 추가</div></div>`;
+  document.getElementById('photoGrid').innerHTML=h;
+}
+function openPhotoModal(){ document.getElementById('photoModal').classList.remove('hidden'); }
+function closePhotoModal(){ document.getElementById('photoModal').classList.add('hidden'); }
+function pickSticker(s,el){
+  tempSticker=s;
+  document.getElementById('stickerInfo').textContent='선택된 스티커: '+(s||'없음');
+  document.querySelectorAll('#stickerPicker span').forEach(x=>{ x.style.outline='none'; x.style.borderRadius='0'; });
+  el.style.outline='2px solid var(--accent)'; el.style.borderRadius='4px';
+}
+function submitPhoto(){
+  const url=document.getElementById('p-url').value.trim();
+  const date=document.getElementById('p-date').value||new Date().toISOString().split('T')[0];
+  const caption=document.getElementById('p-caption').value.trim();
+  if(!caption){ alert('한마디 설명을 입력해주세요!'); return; }
+  PHOTOS.push({ id:nextPhotoId++, url, date, caption, author:currentUser.name, sticker:tempSticker });
+  closePhotoModal();
+  document.getElementById('p-url').value='';
+  document.getElementById('p-date').value='';
+  document.getElementById('p-caption').value='';
+  tempSticker='';
+  document.getElementById('stickerInfo').textContent='선택된 스티커: 없음';
+  document.querySelectorAll('#stickerPicker span').forEach(x=>{ x.style.outline='none'; x.style.borderRadius='0'; });
+  renderPhotos();
+}
+
+// ══ ADMIN ══
+function adminAddMovie(){
+  const title=document.getElementById('a-title').value.trim();
+  const dir=document.getElementById('a-dir').value.trim();
+  const month=parseInt(document.getElementById('a-month').value);
+  const genre=document.getElementById('a-genre').value.trim();
+  const poster=document.getElementById('a-poster').value.trim();
+  if(!title||!dir){ alert('제목과 감독을 입력해주세요'); return; }
+  MOVIES.push({ id:nextMovieId++, title, director:dir, month, genre, poster, reviews:[] });
+  updateStats(); renderMovieTabs(); renderHomeRecent(); renderAdminTables();
+  ['a-title','a-dir','a-genre','a-poster'].forEach(id=>document.getElementById(id).value='');
+  alert('영화가 등록되었습니다!');
+}
+function adminDeleteMovie(id){
+  if(!confirm('영화를 삭제하시겠습니까? 리뷰도 모두 삭제됩니다.')) return;
+  const i=MOVIES.findIndex(m=>m.id===id); if(i>=0) MOVIES.splice(i,1);
+  updateStats(); renderMovieTabs(); renderHomeRecent(); renderAdminTables();
+}
+function renderAdminTables(){
+  // 한줄평 작성자 현황
+  const cnt={};
+  MOVIES.forEach(m=>m.reviews.forEach(r=>{
+    if(!cnt[r.memberName]) cnt[r.memberName]={ name:r.memberName, dept:r.dept, count:0 };
+    cnt[r.memberName].count++;
+  }));
+  const reviewers=Object.values(cnt).sort((a,b)=>b.count-a.count);
+  document.getElementById('reviewerTbody').innerHTML=reviewers.length
+    ?reviewers.map(u=>`<tr><td>${u.name}</td><td>${u.dept}</td><td>${u.count}</td></tr>`).join('')
+    :`<tr><td colspan="3" style="color:var(--muted);text-align:center">아직 한줄평이 없습니다</td></tr>`;
+  // 영화 목록
+  document.getElementById('movieTbody').innerHTML=MOVIES.map(m=>`
+    <tr>
+      <td>${m.month}월</td><td>${m.title}</td><td>${m.director}</td>
+      <td>${m.reviews.length}</td>
+      <td><button class="del-btn" onclick="adminDeleteMovie(${m.id})">삭제</button></td>
+    </tr>`).join('');
+}
+
+// ══ INIT ══
+document.getElementById('appScreen').style.display='none';
+</script>
+</body>
+</html>
